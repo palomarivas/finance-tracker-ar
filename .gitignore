@@ -1,0 +1,28 @@
+# Dependencies
+/node_modules
+
+# Build output
+/dist
+/build
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+logs
+
+# Coverage / tests
+/coverage
+.nyc_output
+
+# IDE / OS
+.idea
+.DS_Store
+*.swp
+
+# Nest
+.nestjs
