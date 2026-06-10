@@ -18,7 +18,7 @@ export class EnvironmentVariables {
   @IsInt()
   @Min(0)
   @Max(65535)
-  PORT = 3000;
+  PORT: number = 3000;
 
   @IsString()
   DB_HOST: string;
