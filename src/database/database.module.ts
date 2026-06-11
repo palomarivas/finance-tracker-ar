@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 /**
  * Wires TypeORM to Postgres using the validated env config.
@@ -19,6 +20,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
+        namingStrategy: new SnakeNamingStrategy(),
         autoLoadEntities: true,
         synchronize: false,
         migrations: [__dirname + '/migrations/*{.ts,.js}'],
