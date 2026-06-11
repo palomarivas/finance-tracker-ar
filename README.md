@@ -84,8 +84,8 @@ src/
 ## Build order
 
 1. ✅ Scaffold: Nest + TypeORM + Postgres, bigint cents transformer, docker-compose.
-2. ⬜ Entities + first migration.
-3. ⬜ FxModule (dolarapi sync, valuation, daily cron).
+2. ✅ Entities + first migration.
+3. ✅ FxModule (dolarapi sync, valuation, daily cron). Seed with `npm run seed:fx`.
 4. ⬜ AuthModule (JWT).
 5. ⬜ Import pipeline (parsers, dedup, categorization, credit-card statements).
 6. ⬜ ReportsModule (spend by category, budget vs actual, net worth).
