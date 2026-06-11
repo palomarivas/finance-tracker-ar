@@ -1,5 +1,13 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsInt, IsString, Max, Min, validateSync } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsString,
+  Max,
+  Min,
+  MinLength,
+  validateSync,
+} from 'class-validator';
 
 export enum Environment {
   Development = 'development',
@@ -36,6 +44,14 @@ export class EnvironmentVariables {
 
   @IsString()
   DB_NAME: string;
+
+  @IsString()
+  @MinLength(32, { message: 'JWT_SECRET must be at least 32 characters' })
+  JWT_SECRET: string;
+
+  /** e.g. "1d", "12h" — parsed by @nestjs/jwt. */
+  @IsString()
+  JWT_EXPIRES_IN = '1d';
 }
 
 export function validateEnv(config: Record<string, unknown>): EnvironmentVariables {

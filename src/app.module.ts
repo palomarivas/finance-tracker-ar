@@ -3,9 +3,11 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { validateEnv } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { FxModule } from './fx/fx.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { FxModule } from './fx/fx.module';
     }),
     ScheduleModule.forRoot(),
     DatabaseModule,
+    UsersModule,
+    AuthModule,
     FxModule,
   ],
   controllers: [AppController],
