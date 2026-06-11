@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { validateEnv } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { FxModule } from './fx/fx.module';
+import { ImportModule } from './import/import.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -20,6 +21,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     AuthModule,
     FxModule,
+    ImportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

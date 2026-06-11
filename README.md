@@ -87,6 +87,8 @@ src/
 2. ✅ Entities + first migration.
 3. ✅ FxModule (dolarapi sync, valuation, daily cron). Seed with `npm run seed:fx`.
 4. ✅ AuthModule (JWT register/login, global guard, `@CurrentUser()`).
-5. ⬜ Import pipeline (parsers, dedup, categorization, credit-card statements).
+5. 🔶 Import pipeline: parser Strategy + MercadoPago PDF parser + generic CSV
+   fallback, fingerprint dedup, rules-based categorization, one-transaction
+   persist, batch undo. *(Pending: credit-card resumen parser + USD valuation.)*
 6. ⬜ ReportsModule (spend by category, budget vs actual, net worth).
 7. ⬜ Deploy + architecture write-up.
