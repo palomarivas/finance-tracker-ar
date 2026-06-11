@@ -3,11 +3,14 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AccountsModule } from './accounts/accounts.module';
 import { AuthModule } from './auth/auth.module';
+import { CategoriesModule } from './categories/categories.module';
 import { validateEnv } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { FxModule } from './fx/fx.module';
 import { ImportModule } from './import/import.module';
+import { RulesModule } from './rules/rules.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -20,6 +23,9 @@ import { UsersModule } from './users/users.module';
     DatabaseModule,
     UsersModule,
     AuthModule,
+    AccountsModule,
+    CategoriesModule,
+    RulesModule,
     FxModule,
     ImportModule,
   ],
