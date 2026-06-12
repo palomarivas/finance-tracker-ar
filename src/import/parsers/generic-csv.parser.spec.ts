@@ -1,4 +1,4 @@
-import { Currency } from '../../common/enums/currency.enum';
+﻿import { Currency } from '../../common/enums/currency.enum';
 import { GenericCsvParser } from './generic-csv.parser';
 
 describe('GenericCsvParser', () => {
@@ -13,7 +13,7 @@ describe('GenericCsvParser', () => {
   });
 
   it('parses semicolon-delimited Argentine CSV', async () => {
-    const rows = await parser.parse(
+    const { rows } = await parser.parse(
       csv(
         'fecha;descripcion;importe;moneda\n' +
           '01/05/26;Compra ficticia;-1.234,56;ARS\n' +
@@ -30,7 +30,7 @@ describe('GenericCsvParser', () => {
   });
 
   it('parses ISO dates and USD currency', async () => {
-    const rows = await parser.parse(
+    const { rows } = await parser.parse(
       csv('date,description,amount,currency\n2026-05-03,Suscripción,-20.00,USD\n'),
     );
     expect(rows).toHaveLength(1);
@@ -39,7 +39,7 @@ describe('GenericCsvParser', () => {
   });
 
   it('IGNORES unknown columns (providers add fields like sub_unit over time)', async () => {
-    const rows = await parser.parse(
+    const { rows } = await parser.parse(
       csv(
         'fecha;sub_unit;descripcion;importe;plataforma de cobro\n' +
           '01/05/26;checkout_pro;Venta;5.000,00;mp\n',
@@ -50,7 +50,7 @@ describe('GenericCsvParser', () => {
   });
 
   it('skips non-data rows (subtotals, blanks) instead of failing', async () => {
-    const rows = await parser.parse(
+    const { rows } = await parser.parse(
       csv(
         'fecha;descripcion;importe\n' +
           '01/05/26;Compra;-100,00\n' +

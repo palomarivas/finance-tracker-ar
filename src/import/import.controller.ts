@@ -8,14 +8,17 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { IsUUID } from 'class-validator';
+import { IsEnum, IsUUID } from 'class-validator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Currency } from '../common/enums/currency.enum';
 import { User } from '../users/entities/user.entity';
+import { CreditCardStatement } from './entities/credit-card-statement.entity';
 import { ImportBatch } from './entities/import-batch.entity';
 import { ImportService, ImportSummary } from './import.service';
 
@@ -24,6 +27,12 @@ const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
 class UploadStatementDto {
   @IsUUID()
   accountId: string;
+}
+
+class SettleStatementDto {
+  /** ARS → full cost (base + percepción); USD → percepción reversed. */
+  @IsEnum(Currency)
+  paymentCurrency: Currency;
 }
 
 @Controller('import')
@@ -62,5 +71,20 @@ export class ImportController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<void> {
     await this.importService.deleteBatch(user, id);
+  }
+
+  @Get('statements')
+  statements(@CurrentUser() user: User): Promise<CreditCardStatement[]> {
+    return this.importService.listStatements(user);
+  }
+
+  /** Record how a resumen was paid; USD payment reverses the percepción. */
+  @Patch('statements/:id/settle')
+  settle(
+    @CurrentUser() user: User,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: SettleStatementDto,
+  ): Promise<CreditCardStatement> {
+    return this.importService.settleStatement(user, id, dto.paymentCurrency);
   }
 }

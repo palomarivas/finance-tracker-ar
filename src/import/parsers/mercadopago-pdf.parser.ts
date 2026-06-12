@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import pdfParse = require('pdf-parse');
 import { Currency } from '../../common/enums/currency.enum';
 import { arAmountToCents, arDateToDate } from './parse-ar.util';
-import { ParsedRow, StatementParser } from './statement-parser.interface';
+import {
+  ParsedRow,
+  ParsedStatement,
+  StatementParser,
+} from './statement-parser.interface';
 
 /**
  * Parses MercadoPago "Resumen de cuenta en pesos" PDFs.
@@ -51,9 +55,9 @@ export class MercadoPagoPdfParser implements StatementParser {
     }
   }
 
-  async parse(buffer: Buffer): Promise<ParsedRow[]> {
+  async parse(buffer: Buffer): Promise<ParsedStatement> {
     const { text } = await pdfParse(buffer);
-    return this.parseText(text);
+    return { rows: this.parseText(text) };
   }
 
   /** Pure text → rows step, exposed for unit testing with synthetic fixtures. */

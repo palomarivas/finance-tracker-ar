@@ -87,8 +87,11 @@ src/
 2. ✅ Entities + first migration.
 3. ✅ FxModule (dolarapi sync, valuation, daily cron). Seed with `npm run seed:fx`.
 4. ✅ AuthModule (JWT register/login, global guard, `@CurrentUser()`).
-5. 🔶 Import pipeline: parser Strategy + MercadoPago PDF parser + generic CSV
-   fallback, fingerprint dedup, rules-based categorization, one-transaction
-   persist, batch undo. *(Pending: credit-card resumen parser + USD valuation.)*
+5. ✅ Import pipeline: parser Strategy (MercadoPago PDF, Santander VISA resumen,
+   generic CSV fallback), fingerprint dedup, rules-based categorization,
+   one-transaction persist, batch undo — plus the **dólar tarjeta** mechanic:
+   USD card spend freezes `base_ars_cents` (OFICIAL) and `perception_ars_cents`
+   (TARJETA − OFICIAL, never a hardcoded 30%); settling the resumen in USD
+   reverses the percepción, in ARS it stands.
 6. ⬜ ReportsModule (spend by category, budget vs actual, net worth).
 7. ⬜ Deploy + architecture write-up.

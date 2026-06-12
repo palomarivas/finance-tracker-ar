@@ -5,7 +5,11 @@ import {
   arAmountToCents,
   arDateToDate,
 } from './parse-ar.util';
-import { ParsedRow, StatementParser } from './statement-parser.interface';
+import {
+  ParsedRow,
+  ParsedStatement,
+  StatementParser,
+} from './statement-parser.interface';
 
 /**
  * Fallback parser for arbitrary CSV exports. Maps columns by header name
@@ -38,7 +42,7 @@ export class GenericCsvParser implements StatementParser {
     );
   }
 
-  parse(buffer: Buffer): Promise<ParsedRow[]> {
+  async parse(buffer: Buffer): Promise<ParsedStatement> {
     const content = buffer.toString('utf8');
     const delimiter = this.sniffDelimiter(content);
     const records = parse(content, {
@@ -50,7 +54,7 @@ export class GenericCsvParser implements StatementParser {
     }) as string[][];
 
     if (records.length < 2) {
-      return Promise.resolve([]);
+      return { rows: [] };
     }
     const headers = records[0].map((h) => this.normalizeHeader(h));
     const col = {
@@ -78,7 +82,7 @@ export class GenericCsvParser implements StatementParser {
         merchant: col.merchant >= 0 ? record[col.merchant]?.trim() || undefined : undefined,
       });
     }
-    return Promise.resolve(rows);
+    return { rows };
   }
 
   private parseDate(raw: string): Date | null {

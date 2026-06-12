@@ -1,4 +1,5 @@
 import { Currency } from '../../common/enums/currency.enum';
+import { TransactionType } from '../../transactions/enums/transaction-type.enum';
 
 /** One normalized movement extracted from a statement, before persistence. */
 export interface ParsedRow {
@@ -13,6 +14,26 @@ export interface ParsedRow {
    * it anchors the dedup fingerprint, surviving description/format changes.
    */
   externalId?: string;
+  /**
+   * Overrides the sign-derived INCOME/EXPENSE classification. Card payments,
+   * for example, are TRANSFERs (money moving between own accounts), so reports
+   * net them out instead of counting them as income on the card.
+   */
+  typeHint?: TransactionType;
+}
+
+/** Credit-card resumen metadata, when the source file is one. */
+export interface CreditCardMeta {
+  /** YYYY-MM-DD */
+  closingDate: string;
+  /** YYYY-MM-DD */
+  dueDate: string;
+}
+
+/** Everything a parser extracted from one uploaded file. */
+export interface ParsedStatement {
+  rows: ParsedRow[];
+  creditCardMeta?: CreditCardMeta;
 }
 
 /**
@@ -27,7 +48,7 @@ export interface StatementParser {
 
   canParse(filename: string, sample: Buffer): Promise<boolean> | boolean;
 
-  parse(buffer: Buffer): Promise<ParsedRow[]>;
+  parse(buffer: Buffer): Promise<ParsedStatement>;
 }
 
 export const STATEMENT_PARSERS = Symbol('STATEMENT_PARSERS');
