@@ -93,5 +93,8 @@ src/
    USD card spend freezes `base_ars_cents` (OFICIAL) and `perception_ars_cents`
    (TARJETA − OFICIAL, never a hardcoded 30%); settling the resumen in USD
    reverses the percepción, in ARS it stands.
-6. ⬜ ReportsModule (spend by category, budget vs actual, net worth).
+6. ✅ Budgets CRUD + ReportsModule: monthly summary, spend by category,
+   budget vs actual, and net worth — USD holdings marked to market at the
+   account's rate (MEP default, buy side), USD card spend at its frozen,
+   settlement-resolved peso cost.
 7. ⬜ Deploy + architecture write-up.

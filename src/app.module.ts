@@ -5,11 +5,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AccountsModule } from './accounts/accounts.module';
 import { AuthModule } from './auth/auth.module';
+import { BudgetsModule } from './budgets/budgets.module';
 import { CategoriesModule } from './categories/categories.module';
 import { validateEnv } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { FxModule } from './fx/fx.module';
 import { ImportModule } from './import/import.module';
+import { ReportsModule } from './reports/reports.module';
 import { RulesModule } from './rules/rules.module';
 import { UsersModule } from './users/users.module';
 
@@ -26,8 +28,10 @@ import { UsersModule } from './users/users.module';
     AccountsModule,
     CategoriesModule,
     RulesModule,
+    BudgetsModule,
     FxModule,
     ImportModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
