@@ -13,6 +13,7 @@ import { FxModule } from './fx/fx.module';
 import { ImportModule } from './import/import.module';
 import { ReportsModule } from './reports/reports.module';
 import { RulesModule } from './rules/rules.module';
+import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -29,6 +30,7 @@ import { UsersModule } from './users/users.module';
     CategoriesModule,
     RulesModule,
     BudgetsModule,
+    TransactionsModule,
     FxModule,
     ImportModule,
     ReportsModule,

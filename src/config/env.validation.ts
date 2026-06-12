@@ -52,6 +52,10 @@ export class EnvironmentVariables {
   /** e.g. "1d", "12h" — parsed by @nestjs/jwt. */
   @IsString()
   JWT_EXPIRES_IN = '1d';
+
+  /** Comma-separated list of allowed browser origins. */
+  @IsString()
+  CORS_ORIGINS = 'http://localhost:4200';
 }
 
 export function validateEnv(config: Record<string, unknown>): EnvironmentVariables {
