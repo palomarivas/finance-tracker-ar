@@ -39,6 +39,13 @@ export interface ImportSummary {
   uncategorized: number;
 }
 
+export interface StatementWithSummary extends CreditCardStatement {
+  /** Sum of USD-currency consumptions on this resumen (negative cents). */
+  usdSpendCents: number;
+  /** Frozen percepción on this resumen — reversed if paid in USD. */
+  perceptionArsCents: number;
+}
+
 @Injectable()
 export class ImportService {
   private readonly logger = new Logger(ImportService.name);
@@ -351,11 +358,47 @@ export class ImportService {
     return statement;
   }
 
-  listStatements(user: User): Promise<CreditCardStatement[]> {
-    return this.statements.find({
+  /**
+   * Statements plus the per-resumen sums the settle UI needs: total USD spend
+   * and the percepción at stake (what paying in USD would reverse).
+   */
+  async listStatements(user: User): Promise<StatementWithSummary[]> {
+    const statements = await this.statements.find({
       where: { user: { id: user.id } },
       relations: { account: true },
       order: { closingDate: 'DESC' },
+    });
+    if (statements.length === 0) {
+      return [];
+    }
+
+    const sums = await this.dataSource
+      .getRepository(Transaction)
+      .createQueryBuilder('t')
+      .select('t.credit_card_statement_id', 'statementId')
+      .addSelect(
+        "COALESCE(SUM(CASE WHEN t.currency = 'USD' THEN t.amount_cents ELSE 0 END), 0)",
+        'usdSpendCents',
+      )
+      .addSelect('COALESCE(SUM(COALESCE(t.perception_ars_cents, 0)), 0)', 'perceptionArsCents')
+      .where('t.credit_card_statement_id IN (:...ids)', {
+        ids: statements.map((s) => s.id),
+      })
+      .groupBy('t.credit_card_statement_id')
+      .getRawMany<{
+        statementId: string;
+        usdSpendCents: string;
+        perceptionArsCents: string;
+      }>();
+
+    const byId = new Map(sums.map((s) => [s.statementId, s]));
+    return statements.map((statement) => {
+      const sum = byId.get(statement.id);
+      return {
+        ...statement,
+        usdSpendCents: Number(sum?.usdSpendCents ?? 0),
+        perceptionArsCents: Number(sum?.perceptionArsCents ?? 0),
+      };
     });
   }
 

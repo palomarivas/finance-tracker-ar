@@ -20,7 +20,11 @@ import { Currency } from '../common/enums/currency.enum';
 import { User } from '../users/entities/user.entity';
 import { CreditCardStatement } from './entities/credit-card-statement.entity';
 import { ImportBatch } from './entities/import-batch.entity';
-import { ImportService, ImportSummary } from './import.service';
+import {
+  ImportService,
+  ImportSummary,
+  StatementWithSummary,
+} from './import.service';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
 
@@ -74,7 +78,7 @@ export class ImportController {
   }
 
   @Get('statements')
-  statements(@CurrentUser() user: User): Promise<CreditCardStatement[]> {
+  statements(@CurrentUser() user: User): Promise<StatementWithSummary[]> {
     return this.importService.listStatements(user);
   }
 
