@@ -17,11 +17,17 @@ export class CategoriesService {
     private readonly categories: Repository<Category>,
   ) {}
 
-  /** The user's categories plus the shared system defaults (user IS NULL). */
+  /**
+   * The user's categories plus the shared system defaults (user IS NULL).
+   * `loadRelationIds` exposes only the owner's id (never the full User, so no
+   * passwordHash leaks) — enough for the client to mark system categories as
+   * read-only via `user === null`.
+   */
   findAll(user: User): Promise<Category[]> {
     return this.categories.find({
       where: [{ user: { id: user.id } }, { user: IsNull() }],
       relations: { parent: true },
+      loadRelationIds: { relations: ['user'] },
       order: { kind: 'ASC', name: 'ASC' },
     });
   }
