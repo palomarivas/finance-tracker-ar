@@ -1,0 +1,33 @@
+# Render Blueprint for the NestJS API. Postgres lives on Neon (set DATABASE_URL).
+# Deploy: Render dashboard → New → Blueprint → pick this repo.
+services:
+  - type: web
+    name: finance-tracker-ar-api
+    runtime: node
+    plan: free
+    region: virginia
+    # --include=dev: build needs the Nest CLI (a devDependency) even though
+    # NODE_ENV=production would otherwise make npm skip dev deps.
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: node dist/main.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_SSL
+        value: 'true'
+      - key: DB_MIGRATIONS_RUN
+        value: 'true'
+      - key: SEED_SYSTEM_CATEGORIES
+        value: 'true'
+      - key: FX_SYNC_ON_BOOT
+        value: 'true'
+      - key: JWT_EXPIRES_IN
+        value: '1d'
+      # Set these in the Render dashboard (marked secret / environment-specific):
+      - key: DATABASE_URL # Neon connection string (postgresql://...sslmode=require)
+        sync: false
+      - key: JWT_SECRET # 48+ random hex chars
+        sync: false
+      - key: CORS_ORIGINS # the Vercel URL, e.g. https://finance-tracker-ar-web.vercel.app
+        sync: false

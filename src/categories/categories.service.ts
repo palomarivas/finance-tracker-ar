@@ -1,21 +1,54 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
+  OnApplicationBootstrap,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
+import { CategoryKind } from './enums/category-kind.enum';
+import { SYSTEM_CATEGORY_DEFAULTS } from './system-defaults';
 
 @Injectable()
-export class CategoriesService {
+export class CategoriesService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(CategoriesService.name);
+
   constructor(
     @InjectRepository(Category)
     private readonly categories: Repository<Category>,
+    private readonly config: ConfigService,
   ) {}
+
+  /** Seed shared system categories on boot when enabled (the deployed API). */
+  async onApplicationBootstrap(): Promise<void> {
+    if (this.config.get<string>('SEED_SYSTEM_CATEGORIES') !== 'true') {
+      return;
+    }
+    let created = 0;
+    for (const [kind, names] of Object.entries(SYSTEM_CATEGORY_DEFAULTS) as [
+      CategoryKind,
+      string[],
+    ][]) {
+      for (const name of names) {
+        const exists = await this.categories.exists({
+          where: { name, kind, user: IsNull() },
+        });
+        if (!exists) {
+          await this.categories.save(this.categories.create({ name, kind, user: null }));
+          created++;
+        }
+      }
+    }
+    if (created > 0) {
+      this.logger.log(`Seeded ${created} system categories`);
+    }
+  }
 
   /**
    * The user's categories plus the shared system defaults (user IS NULL).

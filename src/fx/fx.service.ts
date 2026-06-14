@@ -1,5 +1,11 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { firstValueFrom } from 'rxjs';
@@ -21,14 +27,27 @@ import {
 import { convertUsdCentsToArsCents, pesosToCents } from './fx.util';
 
 @Injectable()
-export class FxService {
+export class FxService implements OnApplicationBootstrap {
   private readonly logger = new Logger(FxService.name);
 
   constructor(
     @InjectRepository(ExchangeRate)
     private readonly rates: Repository<ExchangeRate>,
     private readonly http: HttpService,
+    private readonly config: ConfigService,
   ) {}
+
+  /** Keep the live demo's FX populated by syncing on boot when enabled. */
+  async onApplicationBootstrap(): Promise<void> {
+    if (this.config.get<string>('FX_SYNC_ON_BOOT') !== 'true') {
+      return;
+    }
+    try {
+      await this.syncToday();
+    } catch (err) {
+      this.logger.error('Boot FX sync failed', err as Error);
+    }
+  }
 
   /** Pulls every casa from dolarapi.com in one call and upserts today's rates. */
   async syncToday(): Promise<{ synced: number; date: string }> {

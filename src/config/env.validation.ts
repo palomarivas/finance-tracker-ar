@@ -2,6 +2,7 @@ import { plainToInstance } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
+  IsOptional,
   IsString,
   Max,
   Min,
@@ -28,22 +29,56 @@ export class EnvironmentVariables {
   @Max(65535)
   PORT: number = 3000;
 
+  /**
+   * Full Postgres connection string (e.g. Neon). When set it wins over the
+   * individual DB_* vars below — handy for hosted Postgres.
+   */
+  @IsOptional()
   @IsString()
-  DB_HOST: string;
+  DATABASE_URL?: string;
 
+  // Individual connection params — used for local dev / when DATABASE_URL is unset.
+  @IsOptional()
+  @IsString()
+  DB_HOST?: string;
+
+  @IsOptional()
   @IsInt()
   @Min(0)
   @Max(65535)
-  DB_PORT: number;
+  DB_PORT?: number;
 
+  @IsOptional()
   @IsString()
-  DB_USERNAME: string;
+  DB_USERNAME?: string;
 
+  @IsOptional()
   @IsString()
-  DB_PASSWORD: string;
+  DB_PASSWORD?: string;
 
+  @IsOptional()
   @IsString()
-  DB_NAME: string;
+  DB_NAME?: string;
+
+  /** "true" enables TLS (required by Neon and most hosted Postgres). */
+  @IsOptional()
+  @IsString()
+  DB_SSL?: string;
+
+  /** "true" runs pending migrations on boot (set on the deployed API). */
+  @IsOptional()
+  @IsString()
+  DB_MIGRATIONS_RUN?: string;
+
+  /** "true" seeds the shared system categories on boot if missing. */
+  @IsOptional()
+  @IsString()
+  SEED_SYSTEM_CATEGORIES?: string;
+
+  /** "true" syncs today's FX rates on boot (keeps the live demo's FX populated). */
+  @IsOptional()
+  @IsString()
+  FX_SYNC_ON_BOOT?: string;
 
   @IsString()
   @MinLength(32, { message: 'JWT_SECRET must be at least 32 characters' })
